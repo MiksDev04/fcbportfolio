@@ -3,8 +3,12 @@ let board;
 let score = 0;
 let rows = 4;
 let columns = 4;
+let highestScore = [];
+let clickRestartestart = false;
+const gameOverMessage = document.querySelector('.game-over');
 
-//
+
+// check if you already won
 let is2048Exist = false;
 let is4096Exist = false;
 let is8192Exist = false;
@@ -24,6 +28,13 @@ function setGame() {
         [0, 0, 0, 0]
         
     ];
+    // board = [
+    //     [2, 4, 2, 4],
+    //     [4, 2, 4, 2],
+    //     [2, 4, 2, 1024],
+    //     [4, 2, 4, 1024]
+        
+    // ];
 
     
 
@@ -53,6 +64,17 @@ function setGame() {
 function updateTile(tile, num) {
     tile.innerText = "";
     tile.classList.value = "";
+    let maxScore = [];
+    // own scoring way
+    for(let r = 0; r < rows; r++) {
+        for(let c = 0; c < columns; c++) {
+            maxScore.push(board[r][c]);
+        }
+    }
+    // console.log(Math.max(...maxScore));
+    score = Math.max(...maxScore);
+
+    highestScore.push(score);
 
     tile.classList.add("tile");
 
@@ -97,19 +119,44 @@ function handleSlide(event) { // e - means event
         }
     }
     document.getElementById("score").innerText = score;
+    document.getElementById("high-score").innerText = Math.max(...highestScore);
+
     setTimeout(() => {
-        checkWin();
-    }, 2000);
+    checkWin();
+    }, 100);
+    
     if (hasLost() == true) {
-        setTimeout(() => {
-        alert("You Lost!!");
-        restartGame();
-        alert("tap any key to restart");
-        }, 100);
+        gameOverMessage.style.display = "block";
+
+        while(clickRestart = false) {
+            restartGameButton();
+        }
+
+ 
+
     }
     
 }
+function restartGameButton() {
+    gameOverMessage.style.display = "none";
+    clickRestart = true;
+    restartGame();
+    
+    // for(let r = 0; r < rows; r++) {
+        //     for(let c = 0; c < columns; c++) {
+            //         tile = document.getElementById(r.toString() + "-" + c.toString());
+            //     }
+            // }
+            // let num = board[r][c];
+            
+            // update the tile appearance
+            
+    updateTile(tile, num);
+}
+
+
 document.addEventListener("keydown", handleSlide);
+
 
 // Removes the zero from the row / column
 function filterZero(row) {
@@ -127,19 +174,6 @@ function slide(row) {
 
             //adds the merge tile value to the score
             // score += row[i];
-
-
-
-
-            let maxScore = [];
-            // own scoring way
-            for(let r = 0; r < rows; r++) {
-                for(let c = 0; c < columns; c++) {
-                    maxScore.push(board[r][c]);
-                }
-            }
-            // console.log(Math.max(...maxScore));
-            score = Math.max(...maxScore);
         }
     }
     row = filterZero(row);
@@ -150,6 +184,7 @@ function slide(row) {
     return row;
 
 }
+
 
 function slideLeft() {
     for(let r = 0; r < rows; r++) {
@@ -318,19 +353,37 @@ function setTwo() {
 
 // Check if you have aalready won (2048, 4092, 8192)
 function checkWin() {
+    const winContainer = document.querySelector('.win-message-container');
+    const won2048 = document.querySelector('.win-message');
     for(let r = 0; r < rows; r++) {
         for(let c = 0; c < columns; c++) {
             if(board[r][c] == 2048 && is2048Exist == false) {
-                alert("You WIN, You got the 2048");
+                winContainer.style.top = "50px";
+                won2048.textContent = "You got the 2048, GREAT!!";
                 is2048Exist = true;
+                setTimeout(() => {
+                    winContainer.style.top = "-200px";
+                }, 5000);
             }
             else if(board[r][c] == 4096 && is4096Exist == false) {
-                alert("LEGENDARY, You got the 4096");
+                // alert("LEGENDARY, You got the 4096");
+
+                winContainer.style.top = "50px";
+                won2048.textContent = "You got the 4096, LEGENDARY!!";
                 is4096Exist = true;
+                setTimeout(() => {
+                    winContainer.style.top = "-200px";
+                }, 5000);
             }
             else if(board[r][c] == 8192 && is8192Exist == false) {
-                alert("GOAT, You're the GOAT, Insane, ADIIIKKKK");
+                // alert("GOAT, You're the GOAT, Insane, ADIIIKKKK");
+
+                winContainer.style.top = "50px";
+                won2048.textContent = "You got the 8192, DIVINE!!";
                 is8192Exist = true;
+                setTimeout(() => {
+                    winContainer.style.top = "-200px";
+                }, 5000);
             }
         }
     }
@@ -394,16 +447,16 @@ document.addEventListener('touchend', (e) => {
     let diffY = startY - e.changedTouches[0].clientY;
 
     // Check if the horizontal swipe is greater in magnitude than the vertical swipe 
-    if (Math.abs (diffX) > Math.abs(diffY)) {
+    if (Math.abs(diffX) > Math.abs(diffY)) {
         // Horizontal swipe 
-        if (diffX > O) {
+        if (diffX > 0) {
             slideLeft(); 
             setTwo(); 
-            }else { 
-                slideRight();
-                 setTwo ();
-            }
-    }
+        }else { 
+            slideRight();
+            setTwo();
+        }
+    } 
     else {
         if (diffY > 0) { 
             slideUp(); // Call a function for sliding up
@@ -413,24 +466,20 @@ document.addEventListener('touchend', (e) => {
             setTwo();
         }
     }
+    document.getElementById("score").innerText = score;
+    setTimeout(() => {
+    checkWin();
+    }, 100);
+    if (hasLost() == true) {
+        gameOverMessage.style.display = "block";
+
+        while(clickRestart = false) {
+            restartGameButton();
+        }
+
+ 
+        
+
+    }
 });
 
-document.getElementById("score").innerText = score;
- checkWin();
- if (hasLost()) {
-    setTimeout(() => { 
-        alert("Game Over! You have lost the game. Game will restart");
-        restartGame();
-         alert("Click any key to restart");
-    }, 100);
-
-         document.getElementByld("score").innerText = score;
-          checkWin();
-        if (hasLost()) {
-        setTimeout(() => { 
-        alert("Game Over! You have lost the game. Game will restart");
-        restartGame();
-        alert("Click any key to restart");
-    }, 100)
-    }
- }
