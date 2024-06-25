@@ -467,6 +467,8 @@ document.addEventListener('touchend', (e) => {
         }
     }
     document.getElementById("score").innerText = score;
+    document.getElementById("high-score").innerText = Math.max(...highestScore);
+
     setTimeout(() => {
     checkWin();
     }, 100);
